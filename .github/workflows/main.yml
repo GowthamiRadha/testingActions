@@ -14,19 +14,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
         with:
-          node-version: '14' # Change to the desired Node.js version
+          python-version: 3.8 # Change to the desired Python version
 
       - name: Install Dependencies
-        run: npm install # Adjust this if you're using a different package manager
+        run: pip install -r requirements.txt # Adjust this if you have a different requirements file
 
       - name: Build and Test
         run: |
           # Replace these commands with your build and test commands
-          npm run build
-          npm test
+          python setup.py build
+          python setup.py test
 
       - name: Extract Version from Tag
         id: extract_version
@@ -51,4 +51,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: release-artifacts
-          path: ./path/to/your/artifacts # Adjust the path to your built artifacts
+          path: ./dist # Adjust the path to your built artifacts directory
