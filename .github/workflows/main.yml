@@ -1,0 +1,54 @@
+name: Release Pipeline
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on tag pushes with the format v*
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14' # Change to the desired Node.js version
+
+      - name: Install Dependencies
+        run: npm install # Adjust this if you're using a different package manager
+
+      - name: Build and Test
+        run: |
+          # Replace these commands with your build and test commands
+          npm run build
+          npm test
+
+      - name: Extract Version from Tag
+        id: extract_version
+        run: echo "::set-output name=version::${GITHUB_REF#refs/tags/}"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.extract_version.outputs.version }}
+          release_name: Release ${{ steps.extract_version.outputs.version }}
+          body: |
+            Changes in this Release
+            - First Change
+            - Second Change
+          draft: false
+          prerelease: false
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-artifacts
+          path: ./path/to/your/artifacts # Adjust the path to your built artifacts
