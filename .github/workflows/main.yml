@@ -21,22 +21,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-      - name: Extract Version from Tag
-        id: extract_version
-        run: echo "::set-output name=version::${GITHUB_REF#refs/tags/}"
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.extract_version.outputs.version }}
-          release_name: Release ${{ steps.extract_version.outputs.version }}
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: release-artifacts
-          path: ./dist # Adjust the path to your built artifacts directory
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this Release
+            - First Change
+            - Second Change
+          draft: false
+          prerelease: false
